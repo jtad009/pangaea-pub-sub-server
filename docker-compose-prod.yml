@@ -1,0 +1,35 @@
+version: '3'
+services:
+  pangaea_pub_sub:
+    build: .
+    ports:
+      - $PORT:$PORT
+    volumes:
+      - ./:/var/www/pangaea_pub_sub:cached
+    env_file:
+      - ./.env
+    environment:
+      - APP_ENV=local
+      - PORT=${PORT:-5200}
+      - APP_PREFIX=${APP_PREFIX:-pangaea_pub_sub}
+      - APP_NAME=${APP_PREFIX}_api
+      - GIT_BRANCH=develop
+    container_name: ${APP_PREFIX}_api
+    depends_on:
+      - pangaea_pub_sub_cache
+    restart: unless-stopped
+   
+  pangaea_pub_sub_cache:
+    image: redis:alpine
+    ports:
+      - $REDIS_HOST_PORT:6379
+    environment:
+      - REDIS_HOST_PORT=${REDIS_HOST_PORT:-77003}
+    volumes:
+      - pangaea_pub_sub_cache:/var/cache/data
+    container_name: pangaea_pub_sub_cache
+    restart: unless-stopped
+
+volumes:
+    pangaea_pub_sub_data: {}
+    pangaea_pub_sub_cache: {}

@@ -1,0 +1,52 @@
+version: '3'
+services:
+  test_publisher_app:
+    build:
+      args:
+        user: tester
+      context: ./pangaea-assessment
+      dockerfile: Dockerfile
+    container_name: testing_app
+    tty: true
+    env_file: .env.test
+    environment:
+      - APP_WORKSPACE=test_publisher_app
+    volumes:
+      - ./pangaea-assessment/:/var/www/test_publisher_app:cached
+    depends_on:
+        - test_publisher_app_test
+        - glo_app_db
+    
+        
+  test_publisher_app_test:
+    image: redis:alpine
+    ports:
+      - $REDIS_HOST_PORT:6379
+    volumes:
+      - crawler_test_cache:/var/cache/data
+    environment:
+      - REDIS_HOST_PORT=${REDIS_HOST_PORT:-77013}
+    container_name: test_publisher_app_test
+    restart: unless-stopped
+  
+  glo_app_db:
+    image: mariadb:10.4.17
+    volumes:
+      - glo_app_db_data:/var/lib/mysql
+    restart: unless-stopped
+    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    environment:
+      MYSQL_ROOT_PASSWORD: 'QXlvbWlkZU8K'
+      MYSQL_DATABASE: 'glo_test'
+      MYSQL_USER: 'glo'
+      MYSQL_PASSWORD: 'QXlvbWlkZU8K'
+    ports:
+      # <Port exposed> : < MySQL Port running inside container>
+      - '6111:3306'
+    expose:
+      # Opens port 3306 on the container
+      - '6111'
+
+volumes:
+  crawler_test_cache: {}
+  glo_app_db_data: {}

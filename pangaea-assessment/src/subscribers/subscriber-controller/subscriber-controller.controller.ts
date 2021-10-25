@@ -38,7 +38,7 @@ export class SubscriberController {
     type: Subscriber,
     description: 'New Subscriber added to topic',
   })
-  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @ApiResponse({ status: 400, description: 'Forbidden.' })
   @Post('subscribe/:topic')
   async subscribe(
     @Param('topic') topic: string,

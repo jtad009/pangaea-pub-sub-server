@@ -14,6 +14,8 @@ This project uses sqlite database to hold subscriber information. it employ queu
 
 After starting the app, Visit ``` http://localhost:3000/api ``` to publish or subscribe 
 
+Subscriber  endpoint  ``` http://localhost:9000/```
+
 ### Technologies
 
 - [Nestjs](https://www.nestjs.com//)
@@ -82,7 +84,7 @@ Visit ``` http://localhost:3000/api ``` to publish or subscribe
 
 ### Testing
 
-Find file **.env.testing** in your root directory and set the environment variables listed below:
+Find file **.env.test** in your root directory and set the environment variables listed below:
 
 * **DB_CONNECTION**
 * **DB_HOST**
@@ -95,7 +97,7 @@ Find file **.env.testing** in your root directory and set the environment variab
 If your database is on the same machine, use **docker.host.internal** as the **DB_HOST**
 
 ```
-yarn run test
+docker-compose -f docker-compose-test.yml up
 ```
 
 This project uses Jest for testing.  For more information on how to use jest for testing, visit [Jest](https://jestjs.io/) official website.

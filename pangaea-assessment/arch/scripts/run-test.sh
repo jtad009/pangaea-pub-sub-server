@@ -16,5 +16,5 @@ set -o pipefail
   printf ">>Running test with 'yarn test'..."
   yarn test
 
-  yarn test:cov
+  # yarn test:cov
   

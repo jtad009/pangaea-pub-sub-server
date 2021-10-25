@@ -1,0 +1,87 @@
+version: '3'
+services:
+  pangaea_publish_server:
+    build: 
+      context: ./pangaea-assessment
+    ports:
+      - $PORT:$PORT
+    volumes:
+      - ./pangaea-assessment/:/var/www/pubsub_api:cached
+    env_file:
+      - ./.env
+    environment:
+      - APP_ENV=local
+      - PORT=${PORT:-5200}
+      - APP_PREFIX=${APP_PREFIX:-pangaea_publish}
+      - APP_NAME=${APP_PREFIX}_api
+      - GIT_BRANCH=develop
+    container_name: ${APP_PREFIX}_api
+    depends_on:
+      - pangaea_pub_sub_cache
+      - glo_app_db
+    networks:
+      - pangaea_publish_server
+    restart: unless-stopped
+   
+  pangaea_pub_sub_cache:
+    image: redis:alpine
+    ports:
+      - $REDIS_HOST_PORT:6379
+    environment:
+      - REDIS_HOST_PORT=${REDIS_HOST_PORT:-77003}
+    volumes:
+      - pangaea_pub_sub_cache:/var/cache/data
+    container_name: pangaea_pub_sub_cache
+    networks:
+      - pangaea_publish_server
+    restart: unless-stopped
+  
+  pangaea_subscriber_server:
+    build: 
+      context: ./pangaea-assessment-subscriber
+    ports:
+      - $SUBSCRIBER_PORT:$SUBSCRIBER_PORT
+    volumes:
+      - ./pangaea-assessment-subscriber/:/var/www/pangaea_subscriber_server_api:cached
+    env_file:
+      - ./.env
+    environment:
+      - APP_ENV=local
+      - SUBSCRIBER_PORT=${SUBSCRIBER_PORT:-9000}
+      - APP_PREFIX=${APP_PREFIX:-pangaea_subscriber}
+      - APP_NAME=pangaea_subscriber_server_api
+      - GIT_BRANCH=develop
+    container_name: pangaea_subscriber_server_api
+    expose:  
+      - 9000
+    restart: unless-stopped
+    networks:
+      - pangaea_publish_server
+        
+  glo_app_db:
+    image: mariadb:10.4.17
+    volumes:
+      - glo_app_db_data:/var/lib/mysql
+    restart: unless-stopped
+    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    environment:
+      MYSQL_ROOT_PASSWORD: 'QXlvbWlkZU8K'
+      MYSQL_DATABASE: 'glo'
+      MYSQL_USER: 'glo'
+      MYSQL_PASSWORD: 'QXlvbWlkZU8K'
+    ports:
+      # <Port exposed> : < MySQL Port running inside container>
+      - '6111:3306'
+    expose:
+      # Opens port 3306 on the container
+      - '6111'
+    
+volumes:
+    pangaea_pub_sub_data: {}
+    pangaea_pub_sub_cache: {}
+    glo_app_db_data: {}
+
+networks:
+  pangaea_publish_server:
+    name: custom_network
+

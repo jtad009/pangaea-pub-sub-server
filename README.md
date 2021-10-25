@@ -11,8 +11,12 @@
 This project houses a pub / sub system using HTTP requests, this projects uses docker to boot up two containers connected via custom_network. Subscriber running on port 9000 and the Publisher running on port 3000
 
 This project uses sqlite database to hold subscriber information. it employ queue that have a 10s delay to deploy http requesut to subscribers and logs the ok reesponse from subscribers.
-
-After starting the app, Visit ``` http://localhost:3000/api ``` to publish or subscribe 
+### TO TEST 
+1. After starting the app, Visit ``` http://localhost:3000/api ``` to publish or subscribe 
+2. Subscriber  endpoint  ``` http://localhost:9000/```
+OR 
+You can run ``` chmod +x start-server.sh ``` in the root dir to make script executable
+then run ``` source start-server.sh``` to view response 
 
 ### Technologies
 
@@ -82,7 +86,7 @@ Visit ``` http://localhost:3000/api ``` to publish or subscribe
 
 ### Testing
 
-Find file **.env.testing** in your root directory and set the environment variables listed below:
+Find file **.env.test** in your root directory and set the environment variables listed below:
 
 * **DB_CONNECTION**
 * **DB_HOST**
@@ -95,7 +99,7 @@ Find file **.env.testing** in your root directory and set the environment variab
 If your database is on the same machine, use **docker.host.internal** as the **DB_HOST**
 
 ```
-yarn run test
+docker-compose -f docker-compose-test.yml up
 ```
 
 This project uses Jest for testing.  For more information on how to use jest for testing, visit [Jest](https://jestjs.io/) official website.

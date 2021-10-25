@@ -5,8 +5,6 @@ set -o pipefail
 
 if [ $APP_ENV == "local" ]; then
     echo ">> Running local server..."
-    yarn run migration:generate subscriber
-    yarn run migration:run
     yarn run start:dev
 else
     # build and run the server
